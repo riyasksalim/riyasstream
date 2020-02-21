@@ -3,6 +3,7 @@
     <title>tramsmitir</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script src="https://raw.githubusercontent.com/jhuckaby/webcamjs/master/webcam.js"></script>
   </head>
   <body>
     <video
@@ -12,7 +13,7 @@
       autoplay="true"
     ></video>
     <!-- El canvas obtine las imagenes de la camara que se transmiten -->
-    <canvas id="preview"></canvas>
+    <canvas style="display:none;" id="preview"></canvas>
     <!-- para saber si la camara esta activa -->
     <div id="logger"></div>
 
@@ -43,9 +44,15 @@
       }
 
       function viewVideo(video, context) {
-        context.drawImage(video, 0, 0, context.width, context.height);
+        Webcam.snap(function(data_uri) {
+          // display results in page
+          document.getElementById("results").innerHTML =
+            '<img src="' + data_uri + '"/>';
+        });
+        // context.drawImage(video, 0, 0, context.width, context.height);
         //para trasmitir las imagenes como cadena,  webp es un formato parecido a png
-        socket.emit("stream", canvas.toDataURL("image/jpg"));
+
+        socket.emit("stream", data_uri);
       }
 
       $(function() {
@@ -59,7 +66,7 @@
         }
         setInterval(function() {
           viewVideo(video, context);
-        }, 300);
+        }, 120);
       });
     </script>
   </body>
