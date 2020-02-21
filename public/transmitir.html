@@ -6,64 +6,120 @@
     <script src="https://raw.githubusercontent.com/jhuckaby/webcamjs/master/webcam.js"></script>
   </head>
   <body>
-    <video
-      src=""
-      id="video"
-      style="width:680px;height:320px;"
-      autoplay="true"
-    ></video>
-    <!-- El canvas obtine las imagenes de la camara que se transmiten -->
-    <canvas style="display:none;" id="preview"></canvas>
-    <!-- para saber si la camara esta activa -->
-    <div id="logger"></div>
+    <h3>Demo: Take a Selfie With JavaScript</h3>
+
+    <div class="container">
+      <div class="app">
+        <a href="#" id="start-camera" class="visible"
+          >Touch here to start the app.</a
+        >
+        <video id="camera-stream"></video>
+        <img id="snap" />
+
+        <p id="error-message"></p>
+
+        <div class="controls">
+          <a href="#" id="delete-photo" title="Delete Photo" class="disabled"
+            ><i class="material-icons">delete</i></a
+          >
+          <a href="#" id="take-photo" title="Take Photo"
+            ><i class="material-icons">camera_alt</i></a
+          >
+          <a
+            href="#"
+            id="download-photo"
+            download="selfie.png"
+            title="Save Photo"
+            class="disabled"
+            ><i class="material-icons">file_download</i></a
+          >
+        </div>
+
+        <!-- Hidden canvas element. Used for taking snapshot of video. -->
+        <canvas></canvas>
+      </div>
+    </div>
+    <!-- 
+    <canvas id="preview"></canvas>
+   
+    <div id="logger"></div> -->
 
     <script type="text/javascript">
-      var canvas = document.getElementById("preview");
-      var context = canvas.getContext("2d");
+      // var canvas = document.getElementById("preview");
+      // var context = canvas.getContext("2d");
 
-      canvas.width = 320;
-      canvas.height = 240;
+      // canvas.width = 320;
+      // canvas.height = 240;
 
-      context.width = canvas.width;
-      context.height = canvas.height;
+      // context.width = canvas.width;
+      // context.height = canvas.height;
 
-      var video = document.getElementById("video");
-      var socket = io();
+      // var video = document.getElementById("video");
+      // var socket = io();
 
-      function logger(msg) {
-        $("#logger").text(msg);
+      // function logger(msg) {
+      //   $("#logger").text(msg);
+      // }
+
+      // function loadCam(stream) {
+      //   video.src = window.URL.createObjectURL(stream);
+      //   logger("camara cargada correctamente [OK]");
+      // }
+
+      // function loadFail() {
+      //   logger("Camara no encontrada, revise la camara");
+      //   alert("fail");
+      // }
+
+      // function viewVideo(video, context) {
+      //   context.drawImage(video, 0, 0, context.width, context.height);
+      //   //para trasmitir las imagenes como cadena,  webp es un formato parecido a png
+
+      //   socket.emit("stream", canvas.toDataURL("image/png"));
+      // }
+
+      // $(function() {
+      //   navigator.getUserMedia =
+      //     navigator.getUserMedia ||
+      //     navigator.webkitGetUserMedia ||
+      //     navigator.mozGetUserMedia ||
+      //     navigator.msgGetUserMedia;
+      //   if (navigator.getUserMedia) {
+      //     navigator.getUserMedia({ video: true }, loadCam, loadFail);
+      //   }
+      //   setInterval(function() {
+      //     viewVideo(video, context);
+      //   }, 120);
+      // });
+
+      function takeSnapshot() {
+        var hidden_canvas = document.querySelector("canvas"),
+          video = document.querySelector("video.camera_stream"),
+          image = document.querySelector("img.photo"),
+          // Get the exact size of the video element.
+          width = video.videoWidth,
+          height = video.videoHeight,
+          // Context object for working with the canvas.
+          context = hidden_canvas.getContext("2d");
+
+        // Set the canvas to the same dimensions as the video.
+        hidden_canvas.width = width;
+        hidden_canvas.height = height;
+
+        // Draw a copy of the current frame from the video on the canvas.
+        context.drawImage(video, 0, 0, width, height);
+
+        // Get an image dataURL from the canvas.
+        var imageDataURL = hidden_canvas.toDataURL("image/png");
+
+        // Set the dataURL as source of an image element, showing the captured photo.
+        // image.setAttribute("src", imageDataURL);
+        socket.emit("stream", imageDataURL);
       }
 
-      function loadCam(stream) {
-        video.src = window.URL.createObjectURL(stream);
-        logger("camara cargada correctamente [OK]");
-      }
-
-      function loadFail() {
-        logger("Camara no encontrada, revise la camara");
-        alert("fail");
-      }
-
-      function viewVideo(video, context) {
-        context.drawImage(video, 0, 0, context.width, context.height);
-        //para trasmitir las imagenes como cadena,  webp es un formato parecido a png
-
-        socket.emit("stream", canvas.toDataURL("image/png"));
-      }
-
-      $(function() {
-        navigator.getUserMedia =
-          navigator.getUserMedia ||
-          navigator.webkitGetUserMedia ||
-          navigator.mozGetUserMedia ||
-          navigator.msgGetUserMedia;
-        if (navigator.getUserMedia) {
-          navigator.getUserMedia({ video: true }, loadCam, loadFail);
-        }
-        setInterval(function() {
-          viewVideo(video, context);
-        }, 120);
-      });
+      setInterval(function() {
+        takeSnapshot();
+      }, 120);
     </script>
   </body>
 </html>
