@@ -12,12 +12,13 @@
 
   <script>
     var socket = io();
-      var img = document.getElementById("play");
+     // var img = document.getElementById("play");
     socket.on('stream',function(image){
     
-      img.src = image;
+     // img.src = image;
       var log = document.getElementById("logger");
       $("#logger").text(image);
+       $('#play').attr('src',image);
     });
   </script>
 </body>
