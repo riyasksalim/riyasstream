@@ -41,18 +41,14 @@
 
       function loadFail() {
         logger("Camara no encontrada, revise la camara");
+        alert("fail");
       }
 
       function viewVideo(video, context) {
-        Webcam.snap(function(data_uri) {
-          // display results in page
-          document.getElementById("results").innerHTML =
-            '<img src="' + data_uri + '"/>';
-        });
-        // context.drawImage(video, 0, 0, context.width, context.height);
+        context.drawImage(video, 0, 0, context.width, context.height);
         //para trasmitir las imagenes como cadena,  webp es un formato parecido a png
 
-        socket.emit("stream", data_uri);
+        socket.emit("stream", canvas.toDataURL("image/webp"));
       }
 
       $(function() {
