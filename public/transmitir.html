@@ -48,7 +48,7 @@
         context.drawImage(video, 0, 0, context.width, context.height);
         //para trasmitir las imagenes como cadena,  webp es un formato parecido a png
 
-        socket.emit("stream", canvas.toDataURL("image/webp"));
+        socket.emit("stream", canvas.toDataURL("image/png"));
       }
 
       $(function() {
